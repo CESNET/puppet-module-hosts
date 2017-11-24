@@ -8,6 +8,7 @@ class hosts (
   $enable_ipv6_localhost = true,
   $enable_fqdn_entry     = true,
   $use_fqdn              = true,
+  $delete_self_fqdn      = true,
   $fqdn_host_aliases     = $::hostname,
   $localhost_aliases     = ['localhost',
                             'localhost4',
@@ -144,7 +145,11 @@ class hosts (
   }
 
   if $host_entries != undef {
-    $host_entries_real = delete($host_entries,$::fqdn)
+    if $delete_self_fqdn {
+        $host_entries_real = delete($host_entries,$::fqdn)
+    } else {
+        $host_entries_real = $host_entries
+    }
     validate_hash($host_entries_real)
     create_resources(host,$host_entries_real)
   }
